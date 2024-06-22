@@ -1,33 +1,19 @@
 #!/usr/bin/python3
-"""
-This script prints all City objects
-from the database `hbtn_0e_14_usa`.
-"""
+from model_state import Base, State
+from sqlalchemy import Column, Integer, String, ForeignKey
 
-from sys import argv
-from model_state import State, Base
-from model_city import City
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
 
-if __name__ == "__main__":
-    """
-    Access to the database and get the cities
-    from the database.
+class City(Base):
+    """City class
+    Attributes:
+        __tablename__ (str): The table name of the class
+        id (int): The id of the class
+        name (str): The name of the class
+        state_id (int): The state the city belongs to
     """
 
-    db_url = "mysql+mysqldb://{}:{}@localhost:3306/{}".format(
-        argv[1], argv[2], argv[3])
+    __tablename__ = 'cities'
 
-    engine = create_engine(db_url)
-    Session = sessionmaker(bind=engine)
-
-    session = Session()
-
-    results = session.query(City, State).join(State)
-
-    for city, state in results.all():
-        print("{}: ({}) {}".format(state.name, city.id, city.name))
-
-    session.commit()
-    session.close(
+    id = Column(Integer, primary_key=True)
+    state_id = Column(Integer, ForeignKey('states.id'), nullable=False)
+    name = Column(String(128), nullable=False)
